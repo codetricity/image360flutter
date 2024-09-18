@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const ProviderScope(child: MainApp()));
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  State<MainApp> createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
-  List<Widget> photos = [];
-  List<Widget> displayPhotos = [];
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var imageList = ref.watch(imageProvider);
+    List<Widget> tempList = [];
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SafeArea(
@@ -34,57 +29,51 @@ class _MainAppState extends State<MainApp> {
                     children: [
                       ElevatedButton(
                           onPressed: () async {
-                            photos = [];
                             final url =
                                 Uri.https('image360.oppget.com', 'api/photos/');
                             final response = await http.get(url);
                             final data = json.decode(response.body);
+                            tempList = [];
                             for (var photo in data) {
                               // debugPrint(photo["thumb_url"].toString());
-                              photos.add(Padding(
+                              tempList.add(Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image.network(photo["thumb_url"]),
                               ));
                             }
-                            setState(() {
-                              displayPhotos = photos;
-                            });
+                            ref.read(imageProvider.notifier).state = tempList;
                           },
                           child: const Text('all')),
                       ElevatedButton(
                           onPressed: () async {
-                            photos = [];
+                            tempList = [];
                             final url = Uri.https(
                                 'image360.oppget.com', 'api/realestate/');
                             final response = await http.get(url);
                             final data = json.decode(response.body);
                             for (var photo in data) {
-                              photos.add(Padding(
+                              tempList.add(Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image.network(photo["thumb_url"]),
                               ));
                             }
-                            setState(() {
-                              displayPhotos = photos;
-                            });
+                            ref.read(imageProvider.notifier).state = tempList;
                           },
                           child: const Text('real estate')),
                       ElevatedButton(
                           onPressed: () async {
-                            photos = [];
+                            tempList = [];
                             final url = Uri.https(
                                 'image360.oppget.com', 'api/automotive/');
                             final response = await http.get(url);
                             final data = json.decode(response.body);
                             for (var photo in data) {
-                              photos.add(Padding(
+                              tempList.add(Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Image.network(photo["thumb_url"]),
                               ));
                             }
-                            setState(() {
-                              displayPhotos = photos;
-                            });
+                            ref.read(imageProvider.notifier).state = tempList;
                           },
                           child: const Text('automotive')),
                     ],
@@ -93,7 +82,7 @@ class _MainAppState extends State<MainApp> {
                 Expanded(
                   flex: 6,
                   child: ListView(
-                    children: displayPhotos,
+                    children: imageList,
                   ),
                 )
               ],
@@ -104,3 +93,5 @@ class _MainAppState extends State<MainApp> {
     );
   }
 }
+
+final imageProvider = StateProvider<List<Widget>>((ref) => []);
