@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'providers/image_provider.dart';
+
 void main() {
   runApp(const ProviderScope(child: MainApp()));
 }
@@ -93,5 +95,3 @@ class MainApp extends ConsumerWidget {
     );
   }
 }
-
-final imageProvider = StateProvider<List<Widget>>((ref) => []);
