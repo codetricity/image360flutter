@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:image360mobile/view/get_photo_button.dart';
-import 'dart:convert';
 
 import 'providers/image_provider.dart';
 
